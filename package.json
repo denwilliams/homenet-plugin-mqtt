@@ -13,7 +13,9 @@
   ],
   "author": "Den Williams",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "mqtt": "^2.6.2"
+  },
   "devDependencies": {
     "@homenet/core-tsd": "^4.0.0-beta.8b",
     "@types/node": "^7.0.13"
