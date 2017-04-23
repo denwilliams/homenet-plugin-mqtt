@@ -6,8 +6,8 @@ import * as mqtt from 'mqtt';
 export class MqttPluginLoader implements IPluginLoader {
   private _logger : ILogger;
   private _config : IConfig;
-  private _buttons : Dict<MqttButton>;
-  private _subscriptions : Dict<Function>;
+  private _buttons : Dict<MqttButton> = {};
+  private _subscriptions : Dict<Function> = {};
   private _mqttConnected : boolean = false;
   private _mqttClient : any;
 
