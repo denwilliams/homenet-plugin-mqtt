@@ -1,7 +1,7 @@
 {
   "name": "@homenet/plugin-mqtt",
   "description": "Homenet plugin for buttons and sensors emitted over MQTT",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "main": "lib/index.js",
   "scripts": {
     "test": ""

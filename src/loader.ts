@@ -1,5 +1,6 @@
 import { MqttButton } from './button';
-import { plugin, service, Dict, IPluginLoader, ILogger, IConfig, IButtonManager, IButton } from '@homenet/core';
+import { MqttSensor } from './sensor';
+import { plugin, service, Dict, IPluginLoader, ILogger, IConfig, IClassTypeFactory, IButtonManager, ISensorManager, IButton, ISensor } from '@homenet/core';
 import * as mqtt from 'mqtt';
 
 @plugin()
@@ -13,6 +14,7 @@ export class MqttPluginLoader implements IPluginLoader {
 
   constructor(
           @service('IButtonManager') buttons: IButtonManager,
+          @service('ISensorManager') sensors: ISensorManager,
           @service('IConfig') config: IConfig,
           @service('ILogger') logger: ILogger) {
 
@@ -21,7 +23,10 @@ export class MqttPluginLoader implements IPluginLoader {
 
     this._init();
 
-    buttons.addType('mqtt', this._createFactory());
+    buttons.addType('mqtt', this._createButtonFactory());
+    sensors.addType('mqtt-trigger', this._createSensorsFactory('trigger'));
+    sensors.addType('mqtt-temperature', this._createSensorsFactory('value'));
+    sensors.addType('mqtt-humidity', this._createSensorsFactory('value'));
   }
 
   load() : void {
@@ -89,7 +94,7 @@ export class MqttPluginLoader implements IPluginLoader {
     }
   }
 
-  private _createFactory() {
+  private _createButtonFactory() {
     return (id: string, opts: { }) : IButton => {
       this._logger.info(`Adding MQTT button: ${id}`);
       const button = new MqttButton();
@@ -107,6 +112,33 @@ export class MqttPluginLoader implements IPluginLoader {
       });
       return button;
     };
+  }
+
+  private _createSensorsFactory(type?: 'trigger' | 'value') : IClassTypeFactory<ISensor> {
+    return (id: string, opts: {bridge: string, deviceName: string, zone?: string, timeout?: number}) : ISensor => {
+      const sensor = new MqttSensor(id, opts);
+      
+      const baseTopic = `homenet/sensor/${id}/input`;
+
+      if (!type || type === 'trigger') {
+        this._addSubscription(`${baseTopic}/trigger`, (e) => {
+          sensor.emit('trigger');
+        });
+        sensor.isTrigger = true;
+        sensor.isToggle = false;
+        sensor.isValue = false;
+      } else if (type && type === 'value') {
+        this._addSubscription(`${baseTopic}/value`, (e) => {
+          Object.keys(e).forEach(key => {
+            sensor.emit('value', key, e[key]);
+          });
+        });
+        sensor.isTrigger = false;
+        sensor.isToggle = false;
+        sensor.isValue = true;
+      }
+      return sensor;
+    }
   }
 }
 
