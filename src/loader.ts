@@ -25,8 +25,7 @@ export class MqttPluginLoader implements IPluginLoader {
 
     buttons.addType('mqtt', this._createButtonFactory());
     sensors.addType('mqtt-trigger', this._createSensorsFactory('trigger'));
-    sensors.addType('mqtt-temperature', this._createSensorsFactory('value'));
-    sensors.addType('mqtt-humidity', this._createSensorsFactory('value'));
+    sensors.addType('mqtt-value', this._createSensorsFactory('value'));
   }
 
   load() : void {
