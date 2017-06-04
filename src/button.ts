@@ -11,7 +11,7 @@ export class MqttButton extends EventEmitter implements IButton {
   }
 
   onDoubleClick(cb: Function) {
-    this.on('doubleclick', cb);
+    this.on('dblclick', cb);
   }
 
   onHold(cb: Function) {

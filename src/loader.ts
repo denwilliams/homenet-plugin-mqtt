@@ -103,7 +103,7 @@ export class MqttPluginLoader implements IPluginLoader {
       this._addSubscription(`${baseTopic}/click`, (e) => {
         button.emit('click', e);
       });
-      this._addSubscription(`${baseTopic}/doubleclick`, (e) => {
+      this._addSubscription(`${baseTopic}/dblclick`, (e) => {
         button.emit('dblclick', e);
       });
       this._addSubscription(`${baseTopic}/hold`, (e) => {
